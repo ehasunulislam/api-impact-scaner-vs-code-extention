@@ -16,6 +16,10 @@
       {
         "command": "api-imapct-scaner.helloWorld",
         "title": "Hello World"
+      },
+      {
+        "command": "api-imapct-scaner.scanRoutes",
+        "title": "API Impact Scanner: Scan Routes"
       }
     ]
   },
@@ -34,6 +38,7 @@
     "test": "vscode-test"
   },
   "devDependencies": {
+    "@types/glob": "^8.1.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "24.x",
     "@types/vscode": "^1.138.0",
@@ -51,6 +56,8 @@
   },
   "dependencies": {
     "@babel/parser": "^7.29.9",
-    "@babel/traverse": "^8.0.6"
+    "@babel/traverse": "^8.0.6",
+    "fast-glob": "^3.3.3",
+    "glob": "^13.0.6"
   }
 }
