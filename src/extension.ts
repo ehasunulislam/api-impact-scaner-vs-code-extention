@@ -8,7 +8,7 @@ export function activate(context: vscode.ExtensionContext) {
 		"api-imapct-scaner.scanRoutes", scanRoutesCommand
 	);
 
-	context.subscriptions.push(scanDisoable);
+	// context.subscriptions.push(scanDisoable);
 }
 
 // This method is called when your extension is deactivated
