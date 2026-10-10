@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import { glob } from "glob";
 import fs from "fs/promises";
+import { RouteInfo } from "../types/route.type";
 
 
 export async function scanWorkSpaceFiles() {
@@ -20,10 +21,9 @@ export async function scanWorkSpaceFiles() {
 }
 
 
-
-export async function extractRoutes(files: string[]) {
-    const routes: { route: string; file: string }[] = [];
-
+// backend route extract
+export async function extractRoutes(files: string[]): Promise<RouteInfo[]> {
+    const routes: RouteInfo[] = [];
     const regex = /router\.(get|post|put|patch|delete)\s*\(\s*['"`](.*?)['"`]/g;
 
     for(const file of files) {
