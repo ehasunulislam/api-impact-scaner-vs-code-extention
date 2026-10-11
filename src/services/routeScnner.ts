@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { glob } from "glob";
 import fs from "fs/promises";
-import { RouteInfo } from "../types/route.type";
+import { ImpactedFile, RouteInfo } from "../types/route.type";
 
 
 export async function scanWorkSpaceFiles() {
@@ -48,3 +48,36 @@ export async function extractRoutes(files: string[]): Promise<RouteInfo[]> {
     return routes;
 }
 
+
+// frontend  route extract
+export async function findImpactedFrontendFiles(files: string[], backendRoutes: RouteInfo[]) {
+    const impactedFile: ImpactedFile[] = [];
+
+    for(const file of files) {
+        try {
+            const content = await fs.readFile(file, "utf-8");
+            const matchedRoutes: RouteInfo[] = [];
+
+            for(const routeInfo of backendRoutes) {
+                const cleanRoute = routeInfo.route.replace(/:[a-zA-Z0-9]+/g, ".*");
+                const routeRegex = new RegExp(`['"\`].*?\${cleanRoute}.*?['"\`]`, 'g');
+
+                if(routeRegex.test(content)) {
+                    matchedRoutes.push(routeInfo);
+                }
+            }
+
+            if(matchedRoutes.length > 0) {
+                impactedFile.push({
+                    filePath: file,
+                    affectedRoutes: matchedRoutes
+                });
+            }
+        }
+        catch {
+            continue;
+        }
+    }
+
+    return impactedFile;
+}
