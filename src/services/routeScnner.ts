@@ -35,7 +35,8 @@ export async function extractRoutes(files: string[]): Promise<RouteInfo[]> {
             while((match = regex.exec(content)) !== null) {
                 routes.push({
                     route: match[2],
-                    file
+                    method: match[1].toUpperCase(),
+                    file: file
                 });
             }
         }
