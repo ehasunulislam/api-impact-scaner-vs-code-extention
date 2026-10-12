@@ -1,20 +1,33 @@
 import * as vscode from "vscode";
-import { extractRoutes, scanWorkSpaceFiles } from "../services/routeScnner";
+import { extractRoutes, findImpactedFrontendFiles, scanWorkSpaceFiles } from "../services/routeScnner";
+import { ApiImpactDecorator } from "../providers/impactDecorator";
 
-export async function scanRoutesCommand() {
+export async function scanRoutesCommand(decorator: ApiImpactDecorator) {
     try{
-        const files = await scanWorkSpaceFiles();
-        const routes = await extractRoutes(files);
+        vscode.window.withProgress({
+            location: vscode.ProgressLocation.Notification,
+            title: "Scaning API impacts on Frontend...",
+            cancellable: false
+        },  async(progress) => {
+            const files = await scanWorkSpaceFiles();
+            const backendRoutes = await extractRoutes(files);
 
-        console.log("Routes Found:");
-        console.log(routes);
-        
+            // find the Frontend updated file
+            const impactedFiles = await findImpactedFrontendFiles(files, backendRoutes);
 
-        vscode.window.showInformationMessage(
-            `Found ${routes.length} routes`
+            // return the file's path within array
+            const afftectedPaths = impactedFiles.map((f) => {
+                return f.filePath;
+            });
+
+            // send the highlight within the decorator
+            decorator.updatedImpactedFiles(afftectedPaths);
+
+            vscode.window.showInformationMessage(
+                `Scan Completed! Found ${backendRoutes.length} backend routes. ${impactedFiles.length} frontend files might need updates.`
+            );
+        }
         );
-
-        console.log(files);
     }
     catch(err) {
         vscode.window.showErrorMessage(
