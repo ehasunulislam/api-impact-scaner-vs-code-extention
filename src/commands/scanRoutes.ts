@@ -3,35 +3,34 @@ import { extractRoutes, findImpactedFrontendFiles, scanWorkSpaceFiles } from "..
 import { ApiImpactDecorator } from "../providers/impactDecorator";
 
 export async function scanRoutesCommand(decorator: ApiImpactDecorator) {
-    try{
-        vscode.window.withProgress({
+    try {
+        await vscode.window.withProgress({
             location: vscode.ProgressLocation.Notification,
-            title: "Scaning API impacts on Frontend...",
+            title: "Scanning API impacts across Workspace...",
             cancellable: false
-        },  async(progress) => {
+        }, async (progress) => {
             const files = await scanWorkSpaceFiles();
+            
             const backendRoutes = await extractRoutes(files);
+            
+            if (backendRoutes.length === 0) {
+                vscode.window.showWarningMessage("No backend routes found. Make sure your backend folder is added to the workspace.");
+                return;
+            }
 
-            // find the Frontend updated file
             const impactedFiles = await findImpactedFrontendFiles(files, backendRoutes);
-
-            // return the file's path within array
-            const afftectedPaths = impactedFiles.map((f) => {
-                return f.filePath;
-            });
-
-            // send the highlight within the decorator
-            decorator.updatedImpactedFiles(afftectedPaths);
+            const affectedPaths = impactedFiles.map(f => f.filePath);
+            
+            decorator.updatedImpactedFiles(affectedPaths);
 
             vscode.window.showInformationMessage(
-                `Scan Completed! Found ${backendRoutes.length} backend routes. ${impactedFiles.length} frontend files might need updates.`
+                `Scan Complete! Found ${backendRoutes.length} backend routes. ${impactedFiles.length} frontend files need verification.`
             );
-        }
-        );
-    }
-    catch(err) {
+        });
+
+    } catch (err) {
         vscode.window.showErrorMessage(
-            err instanceof Error ? err.message : "Unknwon Error"
+            err instanceof Error ? err.message : "Unknown Error"
         );
     }
 }

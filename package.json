@@ -9,16 +9,18 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onCommand:api-impact-scanner.scanRoutes"
+  ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "api-imapct-scaner.helloWorld",
+        "command": "api-impact-scanner.helloWorld",
         "title": "Hello World"
       },
       {
-        "command": "api-imapct-scaner.scanRoutes",
+        "command": "api-impact-scanner.scanRoutes",
         "title": "API Impact Scanner: Scan Routes"
       }
     ]
